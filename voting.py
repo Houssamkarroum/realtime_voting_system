@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 import random
 
@@ -34,6 +35,7 @@ if __name__ == '__main__':
 
                 )
     candidates = [candidate[0] for candidate in cur.fetchall()]
+    print("Candidates:", candidates)
 
     if len(candidates) == 0:
         raise Exception("No candidates found")
@@ -55,28 +57,37 @@ if __name__ == '__main__':
                     break
             else:
                 voter = json.loads(msg.value().decode('utf-8'))
+
                 chosen_candidate = random.choice(candidates)
+                print("Chosen: {}".format(chosen_candidate))
+
+
                 vote = voter | chosen_candidate | {
                     'voting_time' : datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
                     'vote': 1
                 }
 
                 try:
-                    print("user {} vote for candidates : {}".format(vote['voter_id'], vote['candidate_id']))
+                    print("User {} is voting for candidate: {}".format(vote['voter_id'], vote['candidat_id']))
+
+                    print("Attempting to insert:", vote)
+
                     cur.execute("""
-                    INSERT INTO voters (voter_id, candidate_id,voting_time)
+                    INSERT INTO votes (voter_id,candidate_id,voting_time)
                     VALUES (%s, %s, %s)
-                    """, (vote['voter_id'], vote['candidate_id'], vote['voting_time'])
+                    """, (vote['voter_id'], vote['candidat_id'], vote['voting_time'])
                     )
                     conn.commit()
                     producer.produce(
-                        topic='voters_topic',
+                        topic='votes_topic',
                         key=vote['voter_id'],
                         value=json.dumps(vote),
                         on_delivery=delivery_report
                     )
                     producer.poll(0)
                 except Exception as e:
-                    print(e)
+                    print("exception here {}".format(e))
+                    conn.rollback()
+            time.sleep(0.5)
     except Exception as e:
         print(e)
