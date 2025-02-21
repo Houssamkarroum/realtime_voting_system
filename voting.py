@@ -68,14 +68,14 @@ if __name__ == '__main__':
                 }
 
                 try:
-                    print("User {} is voting for candidate: {}".format(vote['voter_id'], vote['candidat_id']))
+                    print("User {} is voting for candidate: {}".format(vote['voter_id'], vote['candidate_id']))
 
                     print("Attempting to insert:", vote)
 
                     cur.execute("""
                     INSERT INTO votes (voter_id,candidate_id,voting_time)
                     VALUES (%s, %s, %s)
-                    """, (vote['voter_id'], vote['candidat_id'], vote['voting_time'])
+                    """, (vote['voter_id'], vote['candidate_id'], vote['voting_time'])
                     )
                     conn.commit()
                     producer.produce(
@@ -87,7 +87,7 @@ if __name__ == '__main__':
                     producer.poll(0)
                 except Exception as e:
                     print("exception here {}".format(e))
-                    conn.rollback()
+                    continue
             time.sleep(0.5)
     except Exception as e:
         print(e)

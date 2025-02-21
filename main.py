@@ -11,8 +11,8 @@ def create_table(conn, cur):
     cur.execute(
         """
         CREATE TABLE IF NOT EXISTS candidates (
-        candidat_id VARCHAR(255) PRIMARY KEY,
-        candidat_name VARCHAR(255) NOT NULL,
+        candidate_id VARCHAR(255) PRIMARY KEY,
+        candidate_name VARCHAR(255) NOT NULL,
         party_affiliation VARCHAR(255) NOT NULL,
         biography text ,
         campaign text ,
@@ -55,20 +55,20 @@ def create_table(conn, cur):
 
     conn.commit()
 
-def insert_candidate(conn, cur, candidat_id, candidat_name, party_affiliation, biography, campaign, photo_url):
+def insert_candidate(conn, cur, candidate_id, candidate_name, party_affiliation, biography, campaign, photo_url):
     try:
         cur.execute(
             """
-            INSERT INTO candidates (candidat_id, candidat_name, party_affiliation, biography, campaign, photo_url)
+            INSERT INTO candidates (candidate_id, candidate_name, party_affiliation, biography, campaign, photo_url)
             VALUES (%s, %s, %s, %s, %s, %s)
-            ON CONFLICT (candidat_id) DO UPDATE 
-            SET candidat_name = EXCLUDED.candidat_name,
+            ON CONFLICT (candidate_id) DO UPDATE 
+            SET candidate_name = EXCLUDED.candidate_name,
                 party_affiliation = EXCLUDED.party_affiliation,
                 biography = EXCLUDED.biography,
                 campaign = EXCLUDED.campaign,
                 photo_url = EXCLUDED.photo_url
             """,
-            (candidat_id, candidat_name, party_affiliation, biography, campaign, photo_url)
+            (candidate_id, candidate_name, party_affiliation, biography, campaign, photo_url)
         )
         conn.commit()
         print("Candidate inserted/updated successfully.")
@@ -133,11 +133,11 @@ if __name__ == '__main__':
         )
         candidates = cur.fetchall()
         print(candidates)
-        '''    if len(candidates) == 0:
+        if len(candidates) == 0:
             insert_candidate(
                 conn, cur,
-                candidat_id="CAND1",
-                candidat_name="Aziz Akhannouch",
+                candidate_id="CAND1",
+                candidate_name="Aziz Akhannouch",
                 party_affiliation="the National Rally of Independents party",
                 biography="Aziz Akhannouch has been involved in politics for over 14 years...",
                 campaign="A better future for me...",
@@ -145,8 +145,8 @@ if __name__ == '__main__':
             )
             insert_candidate(
                 conn, cur,
-                candidat_id="CAND12",
-                candidat_name="Abdelilah Benkirane",
+                candidate_id="CAND12",
+                candidate_name="Abdelilah Benkirane",
                 party_affiliation="The Justice and Development Party",
                 biography="Benkirane became Prime Minister on 29 November 2011, The Justice and Development Party retained the majority of seats in the 2016 Moroccan general election",
                 campaign="A better future for all...",
@@ -154,15 +154,15 @@ if __name__ == '__main__':
             )
             insert_candidate(
                 conn, cur,
-                candidat_id="CAND123",
-                candidat_name="Abdellatif Wahbi",
+                candidate_id="CAND123",
+                candidate_name="Abdellatif Wahbi",
                 party_affiliation="Authenticity and Modernity Party (PAM)",
                 biography="Abdellatif Wahbi is a prominent figure in Moroccan politics. He is a member of the Authenticity and Modernity Party (PAM), which is a political party in Morocco",
                 campaign="NEVER JUDGE...",
                 photo_url="https://www.moroccojewishtimes.com/wp-content/uploads/2020/02/wahbi-1-678x381.jpg"
             )
             conn.commit()
-            '''
+
         for i in range(1001):
             voter_data = generate_voter_data()
             insert_voters(conn,cur,voter_data)
